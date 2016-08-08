@@ -53,24 +53,24 @@ server.start((err) =>{
 			function builLendableQuoteRequest(){
 				return new Promise(function(resolve, reject){
 
-				    function serialize(obj) {
+			function serialize(obj) {
 
-                        return _.forEach(obj, function(value, key) { // key = a; value = 1
-                            if (typeof value == "function") {
+                        	return _.forEach(obj, function(value, key) { // key = a; value = 1
+                            	if (typeof value == "function") {
                                 return obj[key] = value();
                             }
 
-                            if (typeof value == "object") {
+                            	if (typeof value == "object") {
                                 return obj[key] = serialize(value);
                             }
 
                             obj[key] = value;
                         })
                     }
-					data.xml = serialize(xml);
-					var convertProposalInXml = builder.buildObject(data.xml);
-					data.xmlConverted = convertProposalInXml;
-					return resolve();
+				data.xml = serialize(xml);
+				var convertProposalInXml = builder.buildObject(data.xml);
+				data.xmlConverted = convertProposalInXml;
+				return resolve();
 				});
 			}
 		}
