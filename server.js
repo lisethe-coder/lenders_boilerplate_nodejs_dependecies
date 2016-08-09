@@ -6,6 +6,7 @@ const Moment = require('moment');
 const Xml2js = require('xml2js');
 var parseXmlString = Xml2js.parseString;
 var builder = new Xml2js.Builder();
+var Utils = require('./modules/utils');
 
 const server = new Hapi.Server(); //We create a server object
 
@@ -53,21 +54,8 @@ server.start((err) =>{
 			function builLendableQuoteRequest(){
 				return new Promise(function(resolve, reject){
 
-			function serialize(obj) {
-
-                        	return _.forEach(obj, function(value, key) { // key = a; value = 1
-                            	if (typeof value == "function") {
-                                return obj[key] = value();
-                            }
-
-                            	if (typeof value == "object") {
-                                return obj[key] = serialize(value);
-                            }
-
-                            obj[key] = value;
-                        })
-                    }
-				data.xml = serialize(xml);
+			
+				data.xml = Utils.(xml);
 				var convertProposalInXml = builder.buildObject(data.xml);
 				data.xmlConverted = convertProposalInXml;
 				return resolve();
