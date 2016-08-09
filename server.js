@@ -6,7 +6,7 @@ const Moment = require('moment');
 const Xml2js = require('xml2js');
 var parseXmlString = Xml2js.parseString;
 var builder = new Xml2js.Builder();
-var Utils = require('./modules/utils');
+var Utils = require('./modules/utils.js');
 
 const server = new Hapi.Server(); //We create a server object
 
@@ -24,7 +24,7 @@ server.start((err) =>{
 
 	server.route({
 		method: 'GET',
-		path: '/lendable/{goldmineId}',
+		path: '/lender/{goldmineId}',
 		handler: function(req, reply){
 			const lwh = {
 				url: 'http://192.168.1.24'
@@ -32,7 +32,7 @@ server.start((err) =>{
 			const data = {};
 
 			getGoldmineRecord()
-				.then(buildXml)
+				.then(buildLenderRequestData)
 				.then(() => {
 					reply(data);
 				})
@@ -51,12 +51,15 @@ server.start((err) =>{
 				})
 			}
 
-			function builLendableQuoteRequest(){
+			function buildLenderRequestData(){
 				return new Promise(function(resolve, reject){
+					var exampleRequest = {
+						name: data.goldmineRecord.app1['first-name'],
+					}
 
-			
-				data.xml = Utils.(xml);
-				var convertProposalInXml = builder.buildObject(data.xml);
+				data.xmlOutput = Utils.serialize(exampleRequest);
+				console.log(112, data.xmlOutput);
+				var convertProposalInXml = builder.buildObject(data.xmlOutput);
 				data.xmlConverted = convertProposalInXml;
 				return resolve();
 				});
