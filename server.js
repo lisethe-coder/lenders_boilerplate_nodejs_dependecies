@@ -7,6 +7,10 @@ const Xml2js = require('xml2js');
 var parseXmlString = Xml2js.parseString;
 var builder = new Xml2js.Builder();
 var Utils = require('./modules/utils.js');
+var rollbar = require('rollbar');
+rollbar.init('17824e35ffaf40b0adac734c09a889f2');
+
+rollbar.reportMessage('Hello World!');
 
 const server = new Hapi.Server(); //We create a server object
 
@@ -16,8 +20,8 @@ server.connection({
 });
 
 //after we start the server and log that its running
-server.start((err) =>{
-	if(err){
+server.start((err) => {
+	if(err) {
 		throw err;
 	}
 	console.log('Server running at: ', server.info.uri);
@@ -55,8 +59,10 @@ server.start((err) =>{
 				return new Promise(function(resolve, reject){
 					var exampleRequest = {
 						name: data.goldmineRecord.app1['first-name'],
+						dob: function() {
+							return Moment(data.goldmineRecord.app1.dob).format('DD-MM-YYYY');
+						},
 					}
-
 				data.xmlOutput = Utils.serialize(exampleRequest);
 				console.log(112, data.xmlOutput);
 				var convertProposalInXml = builder.buildObject(data.xmlOutput);
