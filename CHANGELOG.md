@@ -1,5 +1,8 @@
 ## Creating a changelog file using a markdown extension .md for keeping record of changes
 
+# 1.0.4
+- Include rollbar error manager library in the server file
+
 #1.0.3 
 - Build the request example with real values obtained from Goldmine http request.
 
