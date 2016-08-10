@@ -41,6 +41,18 @@ server.start((err) => {
 					reply(data);
 				})
 
+			console.log('Substracting %d to 40 gives %d', Utils.y, Utils.substractY(40));
+			
+			var u = new Utils.User();
+			
+				u.name = 'Lisethe';
+				u.email = 'hello@lisethe.com';
+				u.dob = Moment().format('DD-MM-YYYY');
+				
+
+			console.log('The object\'s values: ', u.name, u.email);
+			console.log(u);
+
 			function getGoldmineRecord(){
 				return new Promise(function(resolve, reject){
 					Request({
@@ -62,12 +74,17 @@ server.start((err) => {
 						dob: function() {
 							return Moment(data.goldmineRecord.app1.dob).format('DD-MM-YYYY');
 						},
+						sum: function(){
+							return Utils.xxx(53);
+						},
 					}
+
 				data.xmlOutput = Utils.serialize(exampleRequest);
 				console.log(112, data.xmlOutput);
 				var convertProposalInXml = builder.buildObject(data.xmlOutput);
 				data.xmlConverted = convertProposalInXml;
 				return resolve();
+
 				});
 			}
 		}
