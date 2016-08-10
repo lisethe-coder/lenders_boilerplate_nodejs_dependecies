@@ -1,5 +1,8 @@
 ## Creating a changelog file using a markdown extension .md for keeping record of changes
 
+# 1.0.6
+- Delete utils files from the root directory
+
 # 1.0.5
 - Experiments with module exports and new keywork
 
