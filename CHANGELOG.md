@@ -1,5 +1,8 @@
 ## Creating a changelog file using a markdown extension .md for keeping record of changes
 
+# 1.0.7
+- Install hapi swagger library for managing my api documentation
+
 # 1.0.6
 - Delete utils files from the root directory
 

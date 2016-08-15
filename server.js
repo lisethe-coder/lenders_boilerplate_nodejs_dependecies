@@ -131,6 +131,14 @@ server.register([
 			}
 		}
 	})
+	server.route({
+		method: 'get',
+		path: '/',
+		handler: funtion(req, res){
+			return reply('Soy el panel de administracion!');
+
+		}
+	})
 })
 
 
