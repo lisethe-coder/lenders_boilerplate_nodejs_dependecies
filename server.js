@@ -10,26 +10,68 @@ var Utils = require('./modules/utils.js');
 var rollbar = require('rollbar');
 rollbar.init('17824e35ffaf40b0adac734c09a889f2');
 
+const Inert = require('inert');
+const Vision = require('vision');
+const HapiSwagger = require('hapi-swagger');
+const Pack = require('./package');
+
+
 rollbar.reportMessage('Hello World!');
 
 const server = new Hapi.Server(); //We create a server object
-
-//After we add a conncetion to the server, passing the port number to listen on
 server.connection({
 	port: 4444,
 });
 
-//after we start the server and log that its running
-server.start((err) => {
-	if(err) {
-		throw err;
+const options = {
+	info: {
+		'title': 'Test API documentation',
+		'version': Pack.version,
+		'description': 'This is a sample example of API documentation',
+	},
+};
+
+server.register([
+	Inert,
+	Vision,
+	{
+		register: HapiSwagger, 
+		options: options,
+	},
+
+	], (err) => {
+		server.start((err) => {
+			if(err) {
+			throw err;
 	}
 	console.log('Server running at: ', server.info.uri);
+	});
+//After we add a conncetion to the server, passing the port number to listen on
+
+
+//after we start the server and log that its running
+
+	server.route({
+		method: 'get',
+		path: '/store/{id}',
+		config: handlers.storeUpdates,
+	})
+
+	handlers.storeUpdates = {
+		tags: ['api'],
+		description: 'Creating a new documentation for another route',
+		plugins: {
+			'hapi-swagger': {
+				responses: {'400': {'description': 'bad request'}},
+			}
+		}
+	}
 
 	server.route({
 		method: 'GET',
 		path: '/lender/{goldmineId}',
 		handler: function(req, reply){
+
 			const lwh = {
 				url: 'http://192.168.1.24'
 			}
