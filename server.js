@@ -1,4 +1,4 @@
-const Hapi = require('hapi'); // We require Hapi module
+const Hapi = require('hapi'); // Loan hapi module 
 const Promise = require('bluebird');
 const Request = require('request');
 const _ = require('lodash');
@@ -8,6 +8,7 @@ var parseXmlString = Xml2js.parseString;
 var builder = new Xml2js.Builder();
 var Utils = require('./modules/utils.js');
 var rollbar = require('rollbar');
+const Joi = require('joi');
 rollbar.init('17824e35ffaf40b0adac734c09a889f2');
 
 const Inert = require('inert');
@@ -15,10 +16,10 @@ const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const Pack = require('./package');
 
-
 rollbar.reportMessage('Hello World!');
 
-const server = new Hapi.Server(); //We create a server object
+const server = new Hapi.Server(); //We create a new hapi server object. A server is an object in Hapi that receive and route Requests
+//I am creating a server that is connected to port 4444 
 server.connection({
 	port: 4444,
 });
@@ -31,41 +32,115 @@ const options = {
 	},
 };
 
-server.register([
-	Inert,
-	Vision,
-	{
-		register: HapiSwagger, 
-		options: options,
-	},
+//after we start the server and log that its running
+	const plugin = function(server, options, next) {
+		//We add some routes to the server using the server.route() method 
+		server.route({
+			method: 'GET',
+			path: '/cn/{id}',
+			config: {
+				tags: ['api'],
+				description: 'Display the word Chinese!!',
+				validate: {
+					params: {
+						id: Joi.string().description('the query string'),
+					}
+				},
+				plugins: {
+					'hapi-swagger': {
+						responses: {
+							'400': {
+								'description': 'bad request'
+							},
+							'200': {
+								'description' : 'success',
+								schema: Joi.object().keys({
+									scoredId: Joi.number().integer(),
+								})
+							}
+						}
+					}
+				},
+				handler: function (req, reply) {
+					// console.log('req object', req);
+					console.log('req method: ', req.method);	
+				return reply({hello: req.params.id, name: 'Lisethe'}, + '/n' );
+				},
 
-	], (err) => {
+			}
+			
+		});
+		next();
+	}
+
+	const admin_plugin = function(server, options, next) {
+		server.route({
+			method: 'GET',
+			path:'/admin', 
+			handler: function (req, reply) {
+
+				return reply ('I am the administrator panel!');
+
+			}
+
+		});
+		next();
+	}
+
+	const adminUsers_plugin = function(server, options, next) {
+		server.route({
+			method: 'GET',
+			path: '/admin/users',
+			handler: function(req, reply) {
+				return reply ('I displpay all users!');
+			}
+		})
+		next();
+	}
+
+	const admingPosts_plugin = function(server, options, next) {
+
+		server.route({
+			method: 'GET',
+			path: '/admin/posts',
+			handler: function(req, reply) {
+				return reply ('I display all posts!');
+			}
+		})
+		next();
+
+	}
+
+	admingPosts_plugin.attributes = {
+		name: 'admin posts plugin',
+	}
+
+	adminUsers_plugin.attributes = {
+		name: 'admin users plugin',
+	}
+
+	admin_plugin.attributes = {
+		name: 'admin plugin',
+	}
+
+	plugin.attributes = {
+		name: 'my Plugin',
+	}
+
+	server.register(
+		[ Inert, Vision,
+			{
+				register: HapiSwagger,
+				options: options,
+			}, 
+			plugin, admin_plugin, adminUsers_plugin, admingPosts_plugin,
+		], (err) => {
 		server.start((err) => {
 			if(err) {
 			throw err;
-	}
-	console.log('Server running at: ', server.info.uri);
-	});
-//After we add a conncetion to the server, passing the port number to listen on
-
-
-//after we start the server and log that its running
-
-	server.route({
-		method: 'get',
-		path: '/store/{id}',
-		config: handlers.storeUpdates,
-	})
-
-	handlers.storeUpdates = {
-		tags: ['api'],
-		description: 'Creating a new documentation for another route',
-		plugins: {
-			'hapi-swagger': {
-				responses: {'400': {'description': 'bad request'}},
-			}
 		}
-	}
+		console.log('Server running at: ', server.info.uri);
+	});
 
 	server.route({
 		method: 'GET',
@@ -131,14 +206,7 @@ server.register([
 			}
 		}
 	})
-	server.route({
-		method: 'get',
-		path: '/',
-		handler: funtion(req, res){
-			return reply('Soy el panel de administracion!');
-
-		}
-	})
+	
 })
 
 
